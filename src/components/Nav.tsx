@@ -7,7 +7,6 @@ const links = [
   { href: "/", label: "Discover", icon: "🔍" },
   { href: "/planner", label: "Planner", icon: "📅" },
   { href: "/history", label: "History", icon: "📊" },
-  { href: "/preferences", label: "Preferences", icon: "⚙️" },
 ];
 
 export function Nav() {
@@ -18,7 +17,7 @@ export function Nav() {
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex h-14 items-center justify-between">
           <Link href="/" className="flex items-center gap-2 font-semibold text-lg tracking-tight">
-            <span className="text-[var(--color-accent)]">FT</span>
+            <span className="text-[var(--color-accent)]">First Table</span>
             <span className="hidden sm:inline text-[var(--color-text)]">Scanner</span>
           </Link>
 

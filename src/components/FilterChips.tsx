@@ -8,6 +8,10 @@ export interface Filters {
   city: string | null;
   priceTag: string | null;
   vibe: string | null;
+  dietary: string | null;
+  dateFrom: string | null;
+  dateTo: string | null;
+  partySize: number;
   availableOnly: boolean;
   sortBy: "match" | "rating" | "value" | "name";
 }
@@ -17,7 +21,11 @@ export const DEFAULT_FILTERS: Filters = {
   city: null,
   priceTag: null,
   vibe: null,
-  availableOnly: true,
+  dietary: null,
+  dateFrom: null,
+  dateTo: null,
+  partySize: 2,
+  availableOnly: false,
   sortBy: "match",
 };
 
@@ -88,19 +96,23 @@ function countValues(restaurants: Restaurant[], getter: (r: Restaurant) => strin
 }
 
 export function FilterChips({ restaurants, filters, onChange }: FilterChipsProps) {
+  const [showDietary, setShowDietary] = useState(false);
+
   const cuisines = countValues(restaurants, (r) => r.cuisines);
   const cities = countValues(restaurants, (r) => [r.city]);
   const vibes = countValues(restaurants, (r) => r.vibe_tags);
   const prices = countValues(restaurants, (r) => r.price_tag ? [r.price_tag] : []);
+  const dietary = countValues(restaurants, (r) => r.tags.dietary);
 
   const set = (partial: Partial<Filters>) => onChange({ ...filters, ...partial });
 
   const hasActiveFilters =
-    filters.cuisine || filters.city || filters.priceTag || filters.vibe || !filters.availableOnly;
+    filters.cuisine || filters.city || filters.priceTag || filters.vibe ||
+    filters.dietary || filters.dateFrom || filters.dateTo || filters.availableOnly;
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Sort + toggles row */}
+      {/* Controls row: sort, date range, party size, available toggle */}
       <div className="flex flex-wrap items-center gap-2">
         <select
           value={filters.sortBy}
@@ -113,26 +125,91 @@ export function FilterChips({ restaurants, filters, onChange }: FilterChipsProps
           <option value="name">Sort: A-Z</option>
         </select>
 
+        {/* Date range */}
+        <div className="flex items-center gap-1">
+          <input
+            type="date"
+            value={filters.dateFrom || ""}
+            onChange={(e) => set({ dateFrom: e.target.value || null })}
+            className="text-xs px-2 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-muted)] outline-none cursor-pointer w-[120px]"
+            placeholder="From"
+          />
+          <span className="text-[10px] text-[var(--color-text-dim)]">to</span>
+          <input
+            type="date"
+            value={filters.dateTo || ""}
+            onChange={(e) => set({ dateTo: e.target.value || null })}
+            className="text-xs px-2 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-muted)] outline-none cursor-pointer w-[120px]"
+            placeholder="To"
+          />
+          {(filters.dateFrom || filters.dateTo) && (
+            <button
+              onClick={() => set({ dateFrom: null, dateTo: null })}
+              className="text-[10px] text-[var(--color-accent)] hover:underline"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {/* Party size */}
+        <div className="flex items-center gap-0.5 border border-[var(--color-border)] rounded-lg overflow-hidden">
+          {[2, 3, 4].map((size) => (
+            <button
+              key={size}
+              onClick={() => set({ partySize: size })}
+              className={`text-xs px-2.5 py-1.5 transition-all ${
+                filters.partySize === size
+                  ? "bg-[var(--color-accent-muted)] text-[var(--color-accent)]"
+                  : "text-[var(--color-text-dim)] hover:text-[var(--color-text)]"
+              }`}
+            >
+              {size}p
+            </button>
+          ))}
+        </div>
+
+        {/* Available only toggle */}
         <button
           onClick={() => set({ availableOnly: !filters.availableOnly })}
-          className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
+          className={`text-xs px-2.5 py-1.5 rounded-full border transition-all ${
             filters.availableOnly
               ? "border-[var(--color-success)]/30 bg-[var(--color-success)]/10 text-[var(--color-success)]"
-              : "border-[var(--color-border)] text-[var(--color-text-dim)]"
+              : "border-[var(--color-border)] text-[var(--color-text-dim)] hover:border-[var(--color-border-light)]"
           }`}
         >
-          {filters.availableOnly ? "Available only" : "Show all"}
+          Available only
+        </button>
+
+        {/* Dietary toggle */}
+        <button
+          onClick={() => setShowDietary(!showDietary)}
+          className={`text-xs px-2.5 py-1.5 rounded-full border transition-all ${
+            filters.dietary
+              ? "border-[var(--color-accent)] bg-[var(--color-accent-muted)] text-[var(--color-accent)]"
+              : showDietary
+              ? "border-[var(--color-border-light)] text-[var(--color-text)]"
+              : "border-[var(--color-border)] text-[var(--color-text-dim)] hover:border-[var(--color-border-light)]"
+          }`}
+        >
+          Dietary{filters.dietary ? `: ${filters.dietary}` : ""}
+          <span className="ml-1 text-[10px]">{showDietary ? "▲" : "▼"}</span>
         </button>
 
         {hasActiveFilters && (
           <button
-            onClick={() => onChange(DEFAULT_FILTERS)}
+            onClick={() => { onChange(DEFAULT_FILTERS); setShowDietary(false); }}
             className="text-xs text-[var(--color-accent)] hover:underline"
           >
-            Clear filters
+            Clear all
           </button>
         )}
       </div>
+
+      {/* Dietary chips (expandable) */}
+      {showDietary && (
+        <ChipGroup label="Dietary" options={dietary} selected={filters.dietary} onSelect={(v) => set({ dietary: v })} />
+      )}
 
       {/* Filter chips */}
       {cities.length > 1 && (
@@ -162,6 +239,19 @@ export function applyFilters(restaurants: Restaurant[], filters: Filters): Resta
   }
   if (filters.vibe) {
     result = result.filter((r) => r.vibe_tags.includes(filters.vibe!));
+  }
+  if (filters.dietary) {
+    result = result.filter((r) => r.tags.dietary.some((d) => d === filters.dietary));
+  }
+  // Date range filter
+  if (filters.dateFrom || filters.dateTo) {
+    result = result.filter((r) => {
+      return r.slots.some((s) => {
+        if (filters.dateFrom && s.date < filters.dateFrom) return false;
+        if (filters.dateTo && s.date > filters.dateTo) return false;
+        return true;
+      });
+    });
   }
 
   // Sort
