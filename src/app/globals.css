@@ -53,3 +53,55 @@ body {
   background: var(--color-accent-muted);
   color: var(--color-text);
 }
+
+/* Leaflet dark theme overrides */
+.leaflet-container {
+  background: var(--color-bg) !important;
+  font-family: inherit !important;
+}
+.leaflet-popup-content-wrapper {
+  background: var(--color-bg-card) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+}
+.leaflet-popup-tip {
+  background: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border) !important;
+  border-top: none !important;
+  border-left: none !important;
+}
+.leaflet-popup-close-button {
+  color: var(--color-text-muted) !important;
+}
+.leaflet-control-zoom a {
+  background: var(--color-bg-card) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: var(--color-bg-hover) !important;
+}
+.leaflet-control-attribution {
+  background: rgba(12,12,15,0.7) !important;
+  color: var(--color-text-dim) !important;
+  font-size: 9px !important;
+}
+.leaflet-control-attribution a {
+  color: var(--color-text-dim) !important;
+}
+/* Cluster marker styling */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: rgba(108, 99, 255, 0.3) !important;
+}
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background: rgba(108, 99, 255, 0.7) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+}
