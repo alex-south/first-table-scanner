@@ -90,7 +90,7 @@ export function DiscoverView({ restaurants, lastUpdated }: DiscoverViewProps) {
   }, [restaurants, userPrefs]);
 
   const results = useMemo(() => {
-    // Apply filters first (including availableOnly) so search only sees relevant restaurants
+    // Apply filters first so search only sees relevant restaurants
     let result = applyFilters(scoredRestaurants, filters);
 
     // Then search within filtered set

@@ -12,7 +12,6 @@ export interface Filters {
   dateFrom: string | null;
   dateTo: string | null;
   partySize: number;
-  availableOnly: boolean;
   sortBy: "match" | "rating" | "value" | "name";
 }
 
@@ -25,7 +24,6 @@ export const DEFAULT_FILTERS: Filters = {
   dateFrom: null,
   dateTo: null,
   partySize: 2,
-  availableOnly: false,
   sortBy: "match",
 };
 
@@ -108,7 +106,7 @@ export function FilterChips({ restaurants, filters, onChange }: FilterChipsProps
 
   const hasActiveFilters =
     filters.cuisine || filters.city || filters.priceTag || filters.vibe ||
-    filters.dietary || filters.dateFrom || filters.dateTo || filters.availableOnly;
+    filters.dietary || filters.dateFrom || filters.dateTo;
 
   return (
     <div className="flex flex-col gap-3">
@@ -125,33 +123,36 @@ export function FilterChips({ restaurants, filters, onChange }: FilterChipsProps
           <option value="name">Sort: A-Z</option>
         </select>
 
-        {/* Date filter: single date or range */}
+        {/* Date: pick a date, or add an end date for a range */}
         <div className="flex items-center gap-1">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--color-text-dim)]">Date</span>
           <input
             type="date"
             value={filters.dateFrom || ""}
-            onChange={(e) => {
-              const val = e.target.value || null;
-              // If setting a single date and no "to" date exists, just filter to that day
-              set({ dateFrom: val });
-            }}
+            onChange={(e) => set({ dateFrom: e.target.value || null })}
             className={`text-xs px-2 py-1.5 rounded-lg border bg-[var(--color-bg-input)] outline-none cursor-pointer w-[120px] ${
               filters.dateFrom
                 ? "border-[var(--color-accent)]/40 text-[var(--color-text)]"
                 : "border-[var(--color-border)] text-[var(--color-text-muted)]"
             }`}
           />
-          <span className="text-[10px] text-[var(--color-text-dim)]">to</span>
-          <input
-            type="date"
-            value={filters.dateTo || ""}
-            onChange={(e) => set({ dateTo: e.target.value || null })}
-            className={`text-xs px-2 py-1.5 rounded-lg border bg-[var(--color-bg-input)] outline-none cursor-pointer w-[120px] ${
-              filters.dateTo
-                ? "border-[var(--color-accent)]/40 text-[var(--color-text)]"
-                : "border-[var(--color-border)] text-[var(--color-text-muted)]"
-            }`}
-          />
+          {filters.dateFrom && (
+            <>
+              <span className="text-[10px] text-[var(--color-text-dim)]">to</span>
+              <input
+                type="date"
+                value={filters.dateTo || ""}
+                min={filters.dateFrom}
+                onChange={(e) => set({ dateTo: e.target.value || null })}
+                placeholder="End (optional)"
+                className={`text-xs px-2 py-1.5 rounded-lg border bg-[var(--color-bg-input)] outline-none cursor-pointer w-[120px] ${
+                  filters.dateTo
+                    ? "border-[var(--color-accent)]/40 text-[var(--color-text)]"
+                    : "border-[var(--color-border)] text-[var(--color-text-dim)]"
+                }`}
+              />
+            </>
+          )}
           {(filters.dateFrom || filters.dateTo) && (
             <button
               onClick={() => set({ dateFrom: null, dateTo: null })}
@@ -178,18 +179,6 @@ export function FilterChips({ restaurants, filters, onChange }: FilterChipsProps
             </button>
           ))}
         </div>
-
-        {/* Available only toggle */}
-        <button
-          onClick={() => set({ availableOnly: !filters.availableOnly })}
-          className={`text-xs px-2.5 py-1.5 rounded-full border transition-all ${
-            filters.availableOnly
-              ? "border-[var(--color-success)]/30 bg-[var(--color-success)]/10 text-[var(--color-success)]"
-              : "border-[var(--color-border)] text-[var(--color-text-dim)] hover:border-[var(--color-border-light)]"
-          }`}
-        >
-          Available only
-        </button>
 
         {/* Dietary toggle */}
         <button
@@ -235,9 +224,6 @@ export function FilterChips({ restaurants, filters, onChange }: FilterChipsProps
 export function applyFilters(restaurants: Restaurant[], filters: Filters): Restaurant[] {
   let result = restaurants;
 
-  if (filters.availableOnly) {
-    result = result.filter((r) => r.slots.length > 0);
-  }
   if (filters.cuisine) {
     result = result.filter((r) => r.cuisines.some((c) => c === filters.cuisine));
   }
