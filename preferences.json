@@ -1,0 +1,15 @@
+{
+  "cities": {
+    "auckland": 29,
+    "wellington": 38,
+    "christchurch": 40,
+    "queenstown": 6
+  },
+  "active_cities": ["auckland", "wellington"],
+  "preferred_cuisines": ["japanese", "italian", "thai"],
+  "avoid_cuisines": [],
+  "budget_per_person": 50,
+  "preferred_vibes": ["date-night", "casual"],
+  "dietary": [],
+  "party_size": 2
+}

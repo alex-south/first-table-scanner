@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: #0c0c0f;
+  --color-bg-card: #16161a;
+  --color-bg-hover: #1e1e24;
+  --color-bg-input: #1a1a20;
+  --color-border: #2a2a32;
+  --color-border-light: #333340;
+  --color-text: #e8e8ed;
+  --color-text-muted: #8888a0;
+  --color-text-dim: #55556a;
+  --color-accent: #6c63ff;
+  --color-accent-hover: #7b73ff;
+  --color-accent-muted: rgba(108, 99, 255, 0.15);
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --color-gold: #f59e0b;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-light);
+}
+
+/* Selection */
+::selection {
+  background: var(--color-accent-muted);
+  color: var(--color-text);
+}
