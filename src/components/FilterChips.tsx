@@ -12,7 +12,7 @@ export interface Filters {
   dateFrom: string | null;
   dateTo: string | null;
   partySize: number;
-  sortBy: "match" | "rating" | "value" | "name";
+  sortBy: "rating" | "value" | "name";
 }
 
 export const DEFAULT_FILTERS: Filters = {
@@ -24,7 +24,7 @@ export const DEFAULT_FILTERS: Filters = {
   dateFrom: null,
   dateTo: null,
   partySize: 2,
-  sortBy: "match",
+  sortBy: "rating",
 };
 
 interface FilterChipsProps {
@@ -117,7 +117,6 @@ export function FilterChips({ restaurants, filters, onChange }: FilterChipsProps
           onChange={(e) => set({ sortBy: e.target.value as Filters["sortBy"] })}
           className="text-xs px-2.5 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-muted)] outline-none cursor-pointer"
         >
-          <option value="match">Sort: Best match</option>
           <option value="rating">Sort: Highest rated</option>
           <option value="value">Sort: Best value</option>
           <option value="name">Sort: A-Z</option>
@@ -256,9 +255,6 @@ export function applyFilters(restaurants: Restaurant[], filters: Filters): Resta
 
   // Sort
   switch (filters.sortBy) {
-    case "match":
-      result = [...result].sort((a, b) => (b.match_score ?? 0) - (a.match_score ?? 0));
-      break;
     case "rating":
       result = [...result].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
       break;
