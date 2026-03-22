@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import MarkerClusterGroup from "react-leaflet-cluster";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Restaurant } from "@/lib/types";
@@ -96,8 +95,7 @@ export default function MapView({ restaurants }: MapViewProps) {
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
       />
       <FitBounds restaurants={validRestaurants} />
-      <MarkerClusterGroup chunkedLoading maxClusterRadius={50}>
-        {validRestaurants.map((r) => (
+      {validRestaurants.map((r) => (
           <Marker
             key={r.id}
             position={[r.lat!, r.lng!]}
@@ -144,7 +142,6 @@ export default function MapView({ restaurants }: MapViewProps) {
             </Popup>
           </Marker>
         ))}
-      </MarkerClusterGroup>
     </MapContainer>
   );
 }
