@@ -125,22 +125,32 @@ export function FilterChips({ restaurants, filters, onChange }: FilterChipsProps
           <option value="name">Sort: A-Z</option>
         </select>
 
-        {/* Date range */}
+        {/* Date filter: single date or range */}
         <div className="flex items-center gap-1">
           <input
             type="date"
             value={filters.dateFrom || ""}
-            onChange={(e) => set({ dateFrom: e.target.value || null })}
-            className="text-xs px-2 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-muted)] outline-none cursor-pointer w-[120px]"
-            placeholder="From"
+            onChange={(e) => {
+              const val = e.target.value || null;
+              // If setting a single date and no "to" date exists, just filter to that day
+              set({ dateFrom: val });
+            }}
+            className={`text-xs px-2 py-1.5 rounded-lg border bg-[var(--color-bg-input)] outline-none cursor-pointer w-[120px] ${
+              filters.dateFrom
+                ? "border-[var(--color-accent)]/40 text-[var(--color-text)]"
+                : "border-[var(--color-border)] text-[var(--color-text-muted)]"
+            }`}
           />
           <span className="text-[10px] text-[var(--color-text-dim)]">to</span>
           <input
             type="date"
             value={filters.dateTo || ""}
             onChange={(e) => set({ dateTo: e.target.value || null })}
-            className="text-xs px-2 py-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-input)] text-[var(--color-text-muted)] outline-none cursor-pointer w-[120px]"
-            placeholder="To"
+            className={`text-xs px-2 py-1.5 rounded-lg border bg-[var(--color-bg-input)] outline-none cursor-pointer w-[120px] ${
+              filters.dateTo
+                ? "border-[var(--color-accent)]/40 text-[var(--color-text)]"
+                : "border-[var(--color-border)] text-[var(--color-text-muted)]"
+            }`}
           />
           {(filters.dateFrom || filters.dateTo) && (
             <button
@@ -243,8 +253,12 @@ export function applyFilters(restaurants: Restaurant[], filters: Filters): Resta
   if (filters.dietary) {
     result = result.filter((r) => r.tags.dietary.some((d) => d === filters.dietary));
   }
-  // Date range filter
-  if (filters.dateFrom || filters.dateTo) {
+  // Date filter: single date (dateFrom only) or range (dateFrom + dateTo)
+  if (filters.dateFrom && !filters.dateTo) {
+    // Exact single date
+    result = result.filter((r) => r.slots.some((s) => s.date === filters.dateFrom));
+  } else if (filters.dateFrom || filters.dateTo) {
+    // Range
     result = result.filter((r) => {
       return r.slots.some((s) => {
         if (filters.dateFrom && s.date < filters.dateFrom) return false;
