@@ -28,13 +28,14 @@ function createPriceIcon(priceTag: string | null): L.DivIcon {
   return L.divIcon({
     className: "",
     html: `<div style="
-      width: 12px; height: 12px; border-radius: 50%;
-      background: ${color}; border: 2px solid rgba(255,255,255,0.8);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      width: 22px; height: 22px; border-radius: 50%;
+      background: ${color}; border: 2.5px solid rgba(255,255,255,0.9);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
     "></div>`,
-    iconSize: [12, 12],
-    iconAnchor: [6, 6],
-    popupAnchor: [0, -8],
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [0, -14],
   });
 }
 
