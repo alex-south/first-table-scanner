@@ -75,7 +75,7 @@ export function DiscoverView({ restaurants, lastUpdated }: DiscoverViewProps) {
             No restaurants match your criteria
           </p>
           <button
-            onClick={() => { setQuery(""); setFilters(DEFAULT_FILTERS); }}
+            onClick={() => setFilters(DEFAULT_FILTERS)}
             className="text-xs text-[var(--color-accent)] hover:underline"
           >
             Clear all filters
