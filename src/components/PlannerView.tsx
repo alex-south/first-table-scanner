@@ -199,15 +199,7 @@ export function PlannerView({ restaurants }: PlannerViewProps) {
         >
           ←
         </button>
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-[var(--color-text)]">{monthLabel}</span>
-          <button
-            onClick={goToday}
-            className="text-[10px] text-[var(--color-accent)] hover:underline"
-          >
-            Today
-          </button>
-        </div>
+        <span className="text-sm font-semibold text-[var(--color-text)]">{monthLabel}</span>
         <button
           onClick={nextMonth}
           className="px-3 py-1.5 rounded-lg border border-[var(--color-border)] text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:border-[var(--color-border-light)] transition-colors"
