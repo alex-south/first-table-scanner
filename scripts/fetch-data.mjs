@@ -24,7 +24,10 @@ const DELAY_MS = 500;   // polite delay between requests
 
 // --- GraphQL helpers ---
 
-function gqlRequest(query, variables = {}) {
+const MAX_RETRIES = 3;
+const RETRY_BASE_MS = 2000;
+
+function gqlRequestOnce(query, variables = {}) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify({ query, variables });
     const options = {
@@ -44,6 +47,10 @@ function gqlRequest(query, variables = {}) {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
+        if (res.statusCode >= 500) {
+          reject(new Error(`Server error ${res.statusCode}: ${data.substring(0, 200)}`));
+          return;
+        }
         try {
           const parsed = JSON.parse(data);
           if (parsed.errors) {
@@ -60,6 +67,19 @@ function gqlRequest(query, variables = {}) {
     req.write(body);
     req.end();
   });
+}
+
+async function gqlRequest(query, variables = {}) {
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await gqlRequestOnce(query, variables);
+    } catch (err) {
+      if (attempt === MAX_RETRIES) throw err;
+      const delay = RETRY_BASE_MS * 2 ** (attempt - 1);
+      console.warn(`  Attempt ${attempt}/${MAX_RETRIES} failed: ${err.message}. Retrying in ${delay / 1000}s...`);
+      await sleep(delay);
+    }
+  }
 }
 
 function sleep(ms) {
